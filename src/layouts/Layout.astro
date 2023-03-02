@@ -15,8 +15,48 @@ const { title } = Astro.props;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
-	<body>
-		<slot />
+	<body class="">
+		<div class="flex justify-center items-center w-screen h-screen -z-50" id="sketch">
+
+			<canvas id="glcanvas" width="100vw" height="100vh" tabindex="1"></canvas>
+
+    
+			<script type="text/javascript" src="/sketch/js/patch.js" async></script>
+			
+
+			<script>
+
+				// disable rubberband effect on mobile devices
+				document.getElementById('glcanvas')?.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, false);
+
+
+				function patchInitialized(patch) {
+					// You can now access the patch object (patch), register variable watchers and so on
+				}
+
+				function patchFinishedLoading(patch) {
+					// The patch is ready now, all assets have been loaded
+				}
+
+				document.addEventListener('CABLES.jsLoaded', function (event) {
+					CABLES.patch = new CABLES.Patch({
+						patch: CABLES.exportedPatch,
+						"prefixAssetPath": "",
+						"assetPath": "assets/",
+						"jsPath": "js/",
+						"glCanvasId": "glcanvas",
+						"glCanvasResizeToWindow": true,
+						"onPatchLoaded": patchInitialized,
+						"onFinishedLoading": patchFinishedLoading,
+						"canvas":{"alpha":true,"premultipliedAlpha":true} // make canvas transparent
+					});
+				});
+			</script>
+
+		</div>
+		<div class="absolute top-0 left-0">
+			<slot />
+		</div>
 	</body>
 </html>
 <style is:global>
@@ -24,16 +64,8 @@ const { title } = Astro.props;
 		overflow: hidden;
 	}
 	html {
-		font-family: system-ui, sans-serif;
-		background-color: #F6F6F6;
-		padding: 0px;
-		margin: 0px;
-		display: flex;
-		align-items: center;
 		
 	}
 	code {
-		font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-			Bitstream Vera Sans Mono, Courier New, monospace;
 	}
 </style>
